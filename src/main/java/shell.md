@@ -183,11 +183,107 @@ echo 'num = $num'
 num = 200
 num = $num
 ```
+###7.预设变量
+shell直接提供无需定义的变量
+- $#: 传给shell脚本参数的数量
+- $*: 传给shell脚本参数的内容
+- $1,$2,$3,$4...$9: 运行脚本时传递给其的参数，用空格隔开
+- $? 命令执行后返回的状态。$? 命令用于检查上一个命令执行是否正确（在linux 中，命令退出状态为0表示该命令正确执行，任何非0值表示命令出错）
+- $0 当前执行的进程名
+- $$ 当前进程的进程号 $$变量最常见的用途是作零时文件的名字以保证零时文件不重复
 
+例： myshell.sh
+```shell script
+#!/bin/bash
+#预设变量
+echo "$#"
+echo "$*"
+echo "$1"
+echo "$2"
+echo "$3"
+readonly num=250
+echo"readonly num=250 命令执行结果是：$?"
+echo "进程名：$0"
+echo "进程号：$$"
 
+```
+执行：
+```shell script
+./myshell.sh 1 2 3 4  
+```
 
+执行结果： 
+```
+4
+1 2 3 4
+1
+2
+3
+readonly num=250 命令执行结果是：0
+进程名：./test.sh
+进程号：6249
+```
+###8.脚本标量的特殊用法
+- "" : 包含的变量会被解释
+- '' : 全部是字符串，不解释变量
+- `` : 反引号中的内容作为系统命令，并执行其内容，可以替换输出为一个变量
+例：
+```shell script
+echo "tody id `date`"
+```
+执行结果
+```shell script
+tody is Thu Nov 11 17:04:25 CST 2021
+```
+- \ 转义符
+同c语言 \n \r \t \a等，echo命令需要加 -e 转义
 
+例：
+```shell script
+echo "##\n##"
+echo -e "##\n##"
+```
+执行结果:
+```shell script
+##\n##
+##
+##
+```
 
+- ():中的代码块将由子shell进行，不会影响当前shell
+例：
+```shell script
+#!/bin/base
+# ()
+data=10
+(# 子shell完成，不会影响shell的值
+data=100
+echo "()里边的data = $data"
+)
+echo "() 外边的data = $data"
+```
+执行结果
+```shell script
+()里边的data = 100
+() 外边的data = 10
+```
+
+- {}中的代码块由当前shell执行，会影响当前shell
+```shell script
+#!/bin/base
+# ()
+data=10
+{# 子shell完成，不会影响shell的值
+data=100
+echo "()里边的data = $data"
+}
+echo "() 外边的data = $data"
+```
+执行结果
+```shell script
+()里边的data = 100
+() 外边的data = 100
+```
 
 
 
