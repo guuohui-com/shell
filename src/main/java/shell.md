@@ -279,14 +279,294 @@ echo "()里边的data = $data"
 }
 echo "() 外边的data = $data"
 ```
+
 执行结果
 ```shell script
 ()里边的data = 100
 () 外边的data = 100
 ```
+###9.变量的扩展
+####9.1判断变量是否存在 
+${num:-val} 如果变量存在，整个表达式的值为num，否则为val
+```shell script
+#!/bin/bash
+#${num:-val} 如果变量存在，整个表达式的值为num，否则为val
+echo ${num:-100}
+num=200
+echo ${num:-100}
+``` 
+执行结果：
+```shell script
+100
+200
+```
+###9.2字符串操作
+- ${#str} 测量字符串长度
+- ${str:3} 从字符串下标为3的位置开始截取
+- ${str:3:6} 从字符串下标为3开始截取6位
+- ${str/old/new} 用new替换str中的第一个old
+- ${str//old/new} 用new替换str中的所有old
+
+###10.条件测试
+####10.1test命令
+1. test命令：用于测试字符串，文件状态和数字
+2. test命令的两种格式：
+- test condition
+- [ condition ] 使用方括号时没注意在条件两边加上空格
+####10.2 文件测试
+测试文件状态的条件表达式：
+- -e 是否存在
+- -d 是目录
+- -f 是文件
+- -r 可读
+- -w 可写
+- -x 可执行
+- -L 符号链接
+- -c 是否字符设备
+- -b 是否块设备
+- -s 文件非空
+####10.3字符串测试
+- = 两个字符串相等
+- != 两个字符串不相等
+- -z 空串
+- -n 非空串
+```shell script
+test str = "str"
+
+```
+####10.4数值测试
+- -eq 数值相等
+- -ne 数值不相等
+- -gt 数1大于数2
+- -ge 数1大于等于数2
+- -lt 数1小于数2
+- -le 数1小于等于数2
+![数值测试](numberTest.png)
+
+###11 符合语句测试
+####11.1
+- && 左边命令执行成功(即返回0) shell才执行右边的命令
+- || 坐便命令未执行成功(即返回非0) shell才执行右边命令
+例：
+```shell script
+test -e /home && test -d /home && echo "true"
+```
+####11.2 多重条件判定
+- a 两个状况同时成立返回true
+- o 两个状况任何一个成立返回true
+- ! 取反
+
+###12控制语句
+####12.1 if语句
+- if [ 条件1 ]; then else fi
+- if [ 条件1 ]; then elif [条件2]; then fi
+
+例 1：
+```shell script
+#!/bin/base
+#控制语句
+read -p "请输入y：" y
+if [ $y="y" ]; then
+echo "y"
+elif [ $y="h" ]; then
+echo "h"
+else 
+echo "end"
+fi  
+```
+例2：
+![控制语句](controlLaugue.png)
+####12.2 case语句
+- 语法格式
+```shell script
+case $变量名 in
+    "第一个变量内容"）
+    程序段1
+    ;;
+    "第二变量内容" )
+    程序段2
+    ;;
+    *)
+    其他程序段
+    exit 1
+esac
+```
+- 例：
+```shell script
+!#/bin/bash
+read -p "请输入yes/on:" choice
+case $choice in
+    yes | y* | Y*)
+    echo "yes"
+    ;;
+    no | n* |N*)
+    echo "no"
+    ;;
+    *)
+    echo "other"
+    ;;
+esac
+```
+####12.3 for 循环语句
+- 注意： declare 是bash内建命令，可以用来声明shell变量，设置变量的属性。declare也可以写作typeset。<br/>
+declare -i s 代表强制把变量s当做int型参数运算。
+
+- 形式1 <br/>
+for((初始值; 限制值; 步长))
+    do
+        程序段
+    done
+<br/>
+例：
+```shell script
+#!/bin/bash
+#显示使用declare执行为int类型
+declare -i sum=0
+declare -i i=0
+for (( i = 0; i < 100; i++ ))
+do
+  sum=$sum+$i    
+done
+echo "sum=$sum"
+```
+
+- 形式2
+for var in col1 con2 con3...
+do
+    程序段
+done
+<br/>
+例：
+```shell script
+#!/bin/bash
+#显示使用declare执行为int类型
+declare -i sum=0
+declare -i i=0
+for i in 1 2 3 4 5 6  
+do
+  sum=$sum+$i    
+done
+echo "sum=$sum"
+```
+####12.4 while循环
+形式：
+while [ condition ]
+do
+    程序段
+done
+<br/>
+例：
+```shell script
+#!/bin/bash
+#while循环
+declare -i i
+declare -i s
+while [ "$i"!="101" ]
+do
+  s+=i;
+  i=i+1;    
+done
+echo "$s"
+```
+####12.5 until循环
+- 形式：
+until [ condition ]
+do 
+    程序段
+done
+<br/>
+这种方式与while方式相反，当condition成立时退出循环，否则继续循环
+<br/>
+例：
+```shell script
+#!/bin/bash
+declare -i i
+declare -i s
+until [ "$i"="100" ]
+do
+  s+=i;
+  i=i+1;    
+done
+echo "$s"
+```
+
+####12.6 break continue
+- break 跳出循环体
+- continue 跳过本次循环
+
+###13 定义函数的两种格式
+####格式1:
+f(){
+命令 ...
+}
+####格式2：
+function f(){
+命令...
+}
+####函数调用形式：
+函数名 pam1 pam2......
+####函数返回值
+return 从函数中返回，用最后状态命令决定返回值。
+return 0 无措返回
+return 1 有错返回
+
+##补充指令
+####awk指令
+[awk命令](awk.md)
+####xargs
+[xargs命令](xargs.md)
+
+#案例
+##1 java 项目启动脚本
+project.sh
+```shell script
+#!/bin/bash
+#java项目启动脚本
+chmod +x $0
+SHELL_FOLDER=`dirname $0`
+PROJECT_NAME="farm-plus-manager-0.0.1-SNAPSHOT.jar"
+LOG_PATH=$SHELL_FOLDER/logs
+JAVA_OPTS="
+-Xms1280M 
+-Xmx1280M 
+-Dfile.encoding=utf-8"
+
+start(){
+#nohup java args -jar xxxx.jar > xxx.log 2>&1 &
+if [ ! -d $LOG_PATH ];then
+  mkdir $LOG_PATH
+fi       
+nohup java $JAVA_OPTS -jar $SHELL_FOLDER/$PROJECT_NAME > $LOG_PATH/manager.log 2>&1 &
+echo "project start $JAVA_OPTS" 
+}       
+stop(){
+ps -ef | grep $SHELL_FOLDER/$PROJECT_NAME | grep -v grep | awk '{print $2}'|xargs kill -9
+echo "project stop"
+}
+restart(){
+stop
+start
+}
+case $1 in
+    "start")
+    start
+    ;; 
+    "stop")
+    stop
+    ;;
+    "restart")
+    restart
+    ;;
+    *)
+    echo "fail"
+esac
+```
 
 
 
+
+
+ 
 
 
 
